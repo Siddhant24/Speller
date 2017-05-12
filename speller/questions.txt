@@ -1,0 +1,26 @@
+0.  pneumonoultramicroscopicsilicovolcanoconiosis refers to a lung disease caused by inhaling fine dust and ash.
+
+1.  getrusage() means get resource usage. It returns resource(CPU, memory etc.) statistics.
+
+2.  struct rusage has 16 members.
+
+3.  Passing by value would mean copying the whole struct which will take more space than passing by reference.
+
+4.  We start reading the text file character by character, storing the character in c. We then check whether the character
+    is an alphabet or an apostrophe. If it is an apostrophe, we impose the extra condition that the index must be positive
+    because a word cannot start with an apostrophe. Next we append the character to our string word. Then we check whether
+    index has reached the max limit of length of a word(45 in this case). If it is indeed greater than 45 then we iterate 
+    over the file till a non-alphabet is encountered(we check for EOF condition in each iteration) and set index back to zero.
+    If the character is not an alphabet or an apostrophe, we check whether it is a digit. If it is a digit then we iterate
+    till we encounter a non alphanumerical character (we check EOF condition in each iteration), again setting index to zero at
+    the end.
+    If thr character is neither an alphanumeric or an apostrophe and index is positive then we must have found the end of a word.
+    So we append \0 to our string words and update the count of words. Then we record the resource usage before and after using
+    check function. If the word is misspelled then we print it and increase the count of misspellings. Finally we set index back 
+    to zero before the next iteration.
+    
+5.  If we use fscanf to read a word then again we will have to check it character by character whether it has a non aplhabet
+    or a digit character.
+
+6.  We declare parameters of check and load as constant because their parameters are passed by reference and can be
+    accindently changed or freed.
