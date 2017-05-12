@@ -115,11 +115,28 @@ unsigned int size(void)
     return numwords;
 }
 
+void removetrie(trienode *node)
+{
+    if(node->isleaf)
+    {
+        free(node);
+        return;
+    }
+    int i;
+    for(i = 0; i < 27 ; i++)
+    {
+        if(node->children[i] != NULL)
+        {
+            removetrie(node->children[i]);
+        }
+    }
+    free(node);
+    return;
+}
 /**
  * Unloads dictionary from memory. Returns true if successful else false.
  */
 bool unload(void)
 {
-    // TODO
-    return false;
+    removetrie(root);
 }
