@@ -13,8 +13,6 @@ typedef struct trienode
     struct trienode *children[27];
 }trienode;
 
-trienode *root; // root of the trie
-root = (trienode *)malloc(sizeof(trienode));
 // returns a new trie node with its children initialised to NULL
 
 trienode *newnode(void)
@@ -28,6 +26,8 @@ trienode *newnode(void)
     return node;
 }
 
+trienode *root; // root of the trie
+root = newnode();
 //inserts a string in the trie
 
 void insert(char *word)
