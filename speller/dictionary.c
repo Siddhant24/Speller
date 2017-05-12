@@ -14,7 +14,7 @@ typedef struct trienode
 }trienode;
 
 trienode *root; // root of the trie
-
+root = (trienode *)malloc(sizeof(trienode));
 // returns a new trie node with its children initialised to NULL
 
 trienode *newnode(void)
@@ -83,8 +83,19 @@ bool check(const char *word)
  */
 bool load(const char *dictionary)
 {
-    // TODO
-    return false;
+    FILE* inptr = fopen(dictionary, "r");
+    if(inptr == NULL)
+    {
+        fprintf(stderr, "%s does not exist", dictionary);
+        fclose(inptr);
+        return false;
+    }
+    char* word = (char *)malloc((LENGTH+1) * sizeof(char));
+    while(fgets(word, LENGTH, inptr) != EOF)
+    {
+        insert(word);
+    }
+    return true;
 }
 
 /**
