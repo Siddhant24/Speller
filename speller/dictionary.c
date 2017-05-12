@@ -28,6 +28,9 @@ trienode *newnode(void)
 
 trienode *root; // root of the trie
 root = newnode();
+bool isloaded;
+unsigned int numwords = 0;
+
 //inserts a string in the trie
 
 void insert(char *word)
@@ -78,6 +81,7 @@ bool check(const char *word)
     return true;
 }
 
+
 /**
  * Loads dictionary into memory. Returns true if successful else false.
  */
@@ -94,7 +98,9 @@ bool load(const char *dictionary)
     while(fgets(word, LENGTH, inptr) != EOF)
     {
         insert(word);
+        numwords++;
     }
+    isloaded = true;
     return true;
 }
 
@@ -103,8 +109,10 @@ bool load(const char *dictionary)
  */
 unsigned int size(void)
 {
-    // TODO
+    if(!isloaded)
     return 0;
+    
+    return numwords;
 }
 
 /**
