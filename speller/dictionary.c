@@ -3,7 +3,10 @@
  */
 
 #include <stdbool.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include "dictionary.h"
 
 // struct for a node of trie
@@ -23,11 +26,11 @@ trienode *newnode(void)
     {
         node->children[i] = NULL;
     }
+    //node->isleaf = true;
     return node;
 }
 
-trienode *root; // root of the trie
-root = newnode();
+trienode *root = NULL; // root of the trie
 bool isloaded;
 unsigned int numwords = 0;
 
@@ -51,6 +54,8 @@ void insert(char *word)
         if(temp->children[index] == NULL)
         {
             temp->children[index] = newnode();
+            //if(temp->isleaf)
+            //temp->isleaf = false;
         }
         temp = temp->children[index];
     }
@@ -65,11 +70,11 @@ bool check(const char *word)
     trienode *temp = root;
     int index, i, n;
     n = strlen(word);
-    for(i = 0 ; i < 27 ; i++)
+    for(i = 0 ; i < n ; i++)
     {
         if(word[i] != '\'')
         {
-            index = word[i] - 'a';
+            index = tolower(word[i]) - 'a';
         }
         else
         {
@@ -77,8 +82,14 @@ bool check(const char *word)
         }
         if(temp->children[index] == NULL && temp->isleaf == false)
         return false;
+        temp = temp->children[index];
+        if(temp == NULL)
+        return false;
     }
+    if(temp->isleaf)
     return true;
+    else
+    return false;
 }
 
 
@@ -87,19 +98,36 @@ bool check(const char *word)
  */
 bool load(const char *dictionary)
 {
-    FILE* inptr = fopen(dictionary, "r");
-    if(inptr == NULL)
+    root = newnode();
+    FILE* fp = fopen(dictionary, "r");
+    int index = 0;
+    if(fp == NULL)
     {
         fprintf(stderr, "%s does not exist", dictionary);
-        fclose(inptr);
+        fclose(fp);
         return false;
     }
     char* word = (char *)malloc((LENGTH+1) * sizeof(char));
-    while(fgets(word, LENGTH, inptr) != EOF)
+    for (int c = fgetc(fp); c != EOF; c = fgetc(fp))
     {
-        insert(word);
-        numwords++;
+        // allow only alphabetical characters and apostrophes
+        if (isalpha(c) || c == '\'')
+        {
+            // append character to word
+            word[index] = c;
+            index++;
+        }
+        // we must have found a whole word
+        else if (index > 0)
+        {
+            // terminate current word
+            word[index] = '\0';
+            index = 0;
+            insert(word);
+            numwords++;
+        }
     }
+    fclose(fp);
     isloaded = true;
     return true;
 }
@@ -112,31 +140,37 @@ unsigned int size(void)
     if(!isloaded)
     return 0;
     
-    return numwords;
+    return numwords--;
 }
 
-void removetrie(trienode *node)
+bool removetrie(trienode *node)
 {
-    if(node->isleaf)
+    trienode *temp = node;
+    if(temp->isleaf)
     {
-        free(node);
-        return;
+        free(temp);
+        return true;
     }
     int i;
     for(i = 0; i < 27 ; i++)
     {
-        if(node->children[i] != NULL)
+        if(temp->children[i] != NULL)
         {
-            removetrie(node->children[i]);
+            removetrie(temp->children[i]);
         }
     }
-    free(node);
-    return;
+    free(temp);
+    return true;
 }
 /**
  * Unloads dictionary from memory. Returns true if successful else false.
  */
 bool unload(void)
 {
-    removetrie(root);
+    if(removetrie(root))
+    {
+       // free(root);
+        return true;
+    }
+    return false;
 }
