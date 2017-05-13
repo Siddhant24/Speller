@@ -41,7 +41,7 @@ void insert(char *word)
     int index,i;
     trienode *temp = root;
     int n = strlen(word);
-    for(i = 0 ; i < n ; i++)
+    for(i = 0 ; i < n-1 ; i++)
     {
         if(word[i] != '\'')
         {
@@ -100,7 +100,7 @@ bool load(const char *dictionary)
 {
     root = newnode();
     FILE* fp = fopen(dictionary, "r");
-    int index = 0;
+   // int index = 0;
     if(fp == NULL)
     {
         fprintf(stderr, "%s does not exist", dictionary);
@@ -108,24 +108,11 @@ bool load(const char *dictionary)
         return false;
     }
     char* word = (char *)malloc((LENGTH+1) * sizeof(char));
-    for (int c = fgetc(fp); c != EOF; c = fgetc(fp))
+    while(fgets(word, LENGTH +2, fp) != NULL)
     {
-        // allow only alphabetical characters and apostrophes
-        if (isalpha(c) || c == '\'')
-        {
-            // append character to word
-            word[index] = c;
-            index++;
-        }
-        // we must have found a whole word
-        else if (index > 0)
-        {
-            // terminate current word
-            word[index] = '\0';
-            index = 0;
-            insert(word);
-            numwords++;
-        }
+       // word[strlen(word)] = '\0';
+        insert(word);
+        numwords++;
     }
     fclose(fp);
     isloaded = true;
